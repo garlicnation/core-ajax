@@ -78,10 +78,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert(ajax.response.url.match('request1'),
               "Race condition detected. An earlier request's delayed response " +
               "caused the more recent request's response to be overwritten.");
-          done();
           cb();
         }
-      ], function(){});
+      ], function(){
+        xhr.restore();
+        done();
+      });
     });
 </script>
 </body>
