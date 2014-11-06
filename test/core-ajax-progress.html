@@ -13,6 +13,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script src="../../webcomponentsjs/webcomponents.js"></script>
   <script src="../../web-component-tester/browser.js"></script>
+
+
+
   <link rel="import" href="../core-ajax.html">
 
 </head>
@@ -41,9 +44,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           xhr['onprogress'] = null;
       };
       var animationFrameFlush = function(callback) {
-        requestAnimationFrame(function(){
-          flush(callback);
-        })
+        flush(function(){
+          requestAnimationFrame(function(){
+            flush(callback);
+          });
+        });
       };
       var progressEvent = function(lengthComputable, loaded, total) {
         var progress = new ProgressEvent('progress', {
@@ -60,13 +65,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           ajax.url="http://example.org/downloadLargeFile"
           cb();
         },
-        flush,
         animationFrameFlush,
         function(cb) {
           requests[0].dispatchEvent(progressEvent(true, 10, 100));
           cb();
         },
-        flush,
         animationFrameFlush,
         function(cb) {
           assert(ajax.loading === true,
@@ -103,7 +106,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert(ajax.response.content === "plentiful", "response not parsed");
           cb();
         }
-      ], done);
+      ], function(){
+        xhr.restore();
+        done();
+      });
     });
 </script>
 </body>
